@@ -1,0 +1,20 @@
+<div class="kanban-card" id="deal-card-{{ deal.id }}" draggable="true" ondragstart="handleDragStart(event, '{{ deal.id }}')" ondragend="handleDragEnd(event)">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
+        <span class="badge-prob">{{ deal.probability }}% win</span>
+        <button class="badge-ai-trigger" onclick="openCustomerDetailDrawer('{{ deal.customer.id }}')" title="Xem phân tích AI">
+            <span>AI</span>
+        </button>
+    </div>
+
+    <div class="kanban-card-title">{{ deal.title }}</div>
+    <div class="kanban-customer-name">
+        <span>{{ deal.customer.company|default:deal.customer.full_name }}</span>
+    </div>
+
+    <div class="kanban-card-val">{{ deal.amount|floatformat:0 }} đ</div>
+
+    <div class="kanban-card-footer">
+        <span style="color: var(--text-muted);">Hạn: {{ deal.expected_close_date|date:"d/m/Y"|default:"Chưa có" }}</span>
+        <span style="font-weight: 600; color: #475569;">{{ deal.customer.first_name }}</span>
+    </div>
+</div>

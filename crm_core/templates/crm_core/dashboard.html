@@ -1,0 +1,2924 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="SmartFlow AI CRM & ERP Lite - Nền tảng quản trị khách hàng, cơ hội bán hàng và tài nguyên doanh nghiệp thông minh trên Wagtail CMS.">
+    <title>SmartFlow AI CRM & ERP Lite - Enterprise Intelligence Platform</title>
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='50' font-weight='800' fill='white'>SF</text></svg>">
+
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            /* Theme Colors */
+            --bg-app: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --bg-sidebar-hover: #1e293b;
+            --bg-sidebar-active: rgba(99, 102, 241, 0.15);
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f1f5f9;
+            --border-color: #e2e8f0;
+            --border-subtle: #edf2f7;
+
+            /* Typography */
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-subtle: #94a3b8;
+            --text-inverse: #ffffff;
+
+            /* Brand & Accent Colors */
+            --primary: #2563eb;
+            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --ai-accent: #7c3aed;
+            --ai-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --ai-glow: rgba(124, 58, 237, 0.25);
+            --cyan: #06b6d4;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+
+            /* Elevation & Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --shadow-ai: 0 10px 25px -5px rgba(99, 102, 241, 0.35);
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 72px;
+            --header-height: 68px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-body);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .font-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-heading);
+            font-weight: 700;
+        }
+
+        /* App Layout Container */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+        aside.sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 90;
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        aside.sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: #ffffff;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .brand-logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: var(--ai-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.15rem;
+            font-weight: 800;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.2s;
+        }
+
+        .brand-name {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .brand-tag {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.35rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toggle-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar.collapsed .brand-text {
+            display: none;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.25rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #475569;
+            padding: 0 0.65rem 0.35rem 0.65rem;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-group-title {
+            text-align: center;
+            font-size: 0.6rem;
+            padding: 0;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .nav-item-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-md);
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item-btn:hover {
+            color: #f8fafc;
+            background: var(--bg-sidebar-hover);
+        }
+
+        .nav-item-btn.active {
+            color: #ffffff;
+            background: var(--bg-sidebar-active);
+            border-color: rgba(99, 102, 241, 0.3);
+            font-weight: 600;
+        }
+
+        .nav-item-btn.active .nav-icon {
+            color: #818cf8;
+        }
+
+        .nav-icon {
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            flex-shrink: 0;
+        }
+
+        .nav-badge-ai {
+            margin-left: auto;
+            background: var(--ai-gradient);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .nav-badge-ai {
+            display: none;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-cms-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .sidebar-cms-badge:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar.collapsed .sidebar-cms-badge span:not(.cms-icon) {
+            display: none;
+        }
+
+        /* ================= MAIN CONTENT WRAPPER ================= */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .sidebar.collapsed~.main-wrapper {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Top Header Navbar */
+        header.top-navbar {
+            height: var(--header-height);
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 80;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .header-search {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-md);
+            width: 380px;
+            max-width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .header-search:focus-within {
+            border-color: #6366f1;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .header-search input {
+            border: none;
+            background: transparent;
+            font-size: 0.88rem;
+            width: 100%;
+            color: var(--text-heading);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .ai-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: #f5f3ff;
+            color: #6d28d9;
+            border: 1px solid #ddd6fe;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            background: #7c3aed;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #7c3aed;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+        }
+
+        .btn-ai-sparkle {
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-ai-sparkle:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-ai);
+        }
+
+        .btn-add-primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-add-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .user-profile-widget {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            cursor: pointer;
+            padding: 0.35rem 0.65rem;
+            border-radius: var(--radius-md);
+            transition: background 0.15s;
+        }
+
+        .user-profile-widget:hover {
+            background: #f1f5f9;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* View Content Container */
+        .content-area {
+            padding: 2rem;
+            flex: 1;
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Generic Section Views (Switchable via Sidebar) */
+        .app-view {
+            display: none;
+            animation: viewFadeIn 0.25s ease-out;
+        }
+
+        .app-view.active {
+            display: block;
+        }
+
+        @keyframes viewFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .view-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .view-subtitle {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* ================= KPI CARDS GRID ================= */
+        .kpi-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .kpi-stat-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+        }
+
+        .kpi-stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-stat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .kpi-stat-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            margin: 0.5rem 0 0.25rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-stat-footer {
+            font-size: 0.78rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .trend-up {
+            color: var(--emerald);
+            font-weight: 700;
+        }
+
+        /* ================= PROMINENT AI BUSINESS INSIGHT BANNER ================= */
+        .ai-insight-banner {
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            border: 1px solid #4338ca;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem 1.75rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(30, 27, 75, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+        }
+
+        .ai-insight-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .ai-insight-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            max-width: 800px;
+        }
+
+        .ai-sparkle-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--ai-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.6);
+            flex-shrink: 0;
+        }
+
+        .ai-insight-tag {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #a5b4fc;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .ai-insight-headline {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-top: 0.25rem;
+            line-height: 1.5;
+        }
+
+        .ai-insight-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-shrink: 0;
+        }
+
+        .btn-ai-ghost {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 0.55rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-ai-ghost:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ================= 2-COLUMN DASHBOARD ROW ================= */
+        .dash-row-2 {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dash-row-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-panel {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-panel-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 270px;
+            width: 100%;
+        }
+
+        /* Recent Activity Timeline */
+        .timeline-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 0.85rem;
+            position: relative;
+        }
+
+        .timeline-bullet {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .timeline-content {
+            flex: 1;
+            font-size: 0.88rem;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .timeline-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        /* ================= CRM KANBAN BOARD ================= */
+        .kanban-board-container {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(260px, 1fr));
+            gap: 1.25rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .kanban-column {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            min-height: 520px;
+        }
+
+        .kanban-col-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .kanban-col-count {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 7px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .kanban-cards-wrapper {
+            padding: 0.85rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            min-height: 400px;
+        }
+
+        .kanban-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .kanban-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+        }
+
+        .kanban-card.dragging {
+            opacity: 0.4;
+            transform: rotate(2deg);
+        }
+
+        .kanban-card-title {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-heading);
+            margin-bottom: 0.35rem;
+        }
+
+        .kanban-customer-name {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .kanban-card-val {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin-bottom: 0.65rem;
+        }
+
+        .kanban-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            padding-top: 0.65rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .badge-prob {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .badge-ai-trigger {
+            background: #f5f3ff;
+            color: #7c3aed;
+            border: 1px solid #ddd6fe;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            transition: all 0.15s ease;
+        }
+
+        .badge-ai-trigger:hover {
+            background: #ede9fe;
+            transform: translateY(-1px);
+        }
+
+        /* ================= DATA TABLES ================= */
+        .table-responsive {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-toolbar {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tags-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .table-filter-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .table-filter-btn.active,
+        .table-filter-btn:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .saas-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+        }
+
+        .saas-table th {
+            background: #f8fafc;
+            padding: 0.85rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .saas-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-body);
+            vertical-align: middle;
+        }
+
+        .saas-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+        .saas-avatar-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar-initials {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: #4338ca;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-score-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 3px 9px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        /* ================= DEDICATED AI CENTER ================= */
+        .ai-center-layout {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .ai-center-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ai-chat-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .ai-chat-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #f8fafc;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .chat-bubble.user {
+            background: #2563eb;
+            color: #ffffff;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-bubble.ai {
+            background: #ffffff;
+            color: var(--text-heading);
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-bubble.ai pre {
+            background: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+
+        .ai-chips-shelf {
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .ai-chip {
+            background: #f5f3ff;
+            color: #6d28d9;
+            border: 1px solid #ddd6fe;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .ai-chip:hover {
+            background: #ede9fe;
+            border-color: #c4b5fd;
+        }
+
+        .ai-chat-input-bar {
+            padding: 1rem 1.25rem;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            font-size: 0.92rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        /* ================= SIDE OVER DRAWER (AI ASSISTANT) ================= */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .drawer-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .drawer-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 480px;
+            max-width: 90vw;
+            background: #ffffff;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 210;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .drawer-panel.active {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            color: #ffffff;
+        }
+
+        .drawer-body {
+            padding: 1.5rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* ================= LOGIN MODAL ================= */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            padding: 1rem;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: var(--radius-xl);
+            max-width: 440px;
+            width: 100%;
+            padding: 2.25rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Toast Message */
+        .toast-msg {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--emerald);
+            display: none;
+            align-items: center;
+            gap: 0.65rem;
+            z-index: 500;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .toast-msg.active {
+            display: flex;
+            animation: toastPop 0.25s ease-out;
+        }
+
+        @keyframes toastPop {
+            from {
+                transform: translateY(15px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Skeleton loader */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeletonLoading 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes skeletonLoading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <!-- ================= 1. ENTERPRISE SIDEBAR ================= -->
+        <aside class="sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <a href="javascript:void(0)" class="sidebar-brand" onclick="switchMainView('view-dashboard')">
+                    <div class="brand-logo-icon">SF</div>
+                    <div class="brand-text">
+                        <span class="brand-name">SmartFlow</span>
+                        <span class="brand-tag">CRM & ERP Lite • Wagtail</span>
+                    </div>
+                </a>
+                <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Thu gọn / Mở rộng Sidebar">
+                    <span>«</span>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Group 1: Tổng quan -->
+                <div class="nav-group">
+                    <div class="nav-group-title">Tổng quan</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item-btn active" onclick="switchMainView('view-dashboard', this)">
+                                
+                                <span class="nav-text">Dashboard Điều hành</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Group 2: CRM & Bán hàng -->
+                <div class="nav-group">
+                    <div class="nav-group-title">CRM & Bán hàng</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-customers', this)">
+                                
+                                <span class="nav-text">Quản lý Khách hàng</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-pipeline', this)">
+                                
+                                <span class="nav-text">Phễu Bán hàng (Kanban)</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-activities', this)">
+                                
+                                <span class="nav-text">Nhật ký Tương tác</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Group 3: ERP Lite & Nguồn lực -->
+                <div class="nav-group">
+                    <div class="nav-group-title">ERP Lite & Nguồn lực</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-products', this)">
+                                
+                                <span class="nav-text">Sản phẩm & Dịch vụ</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-orders', this)">
+                                
+                                <span class="nav-text">Đơn hàng & Hợp đồng</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-resources', this)">
+                                
+                                <span class="nav-text">Tài nguyên & Kho bãi</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Group 4: Trí tuệ Nhân tạo & Phân tích -->
+                <div class="nav-group">
+                    <div class="nav-group-title">AI & Analytics</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-ai-center', this)">
+                                
+                                <span class="nav-text">AI Command Center</span>
+                                <span class="nav-badge-ai">AI Co-pilot</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-reports', this)">
+                                
+                                <span class="nav-text">Báo cáo & Phân tích</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-tasks', this)">
+                                
+                                <span class="nav-text">Nhiệm vụ & Lịch hẹn</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Group 5: CMS & Hệ thống -->
+                <div class="nav-group">
+                    <div class="nav-group-title">Wagtail CMS & Hệ thống</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-cms', this)">
+                                
+                                <span class="nav-text">Quản lý Nội dung CMS</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item-btn" onclick="switchMainView('view-settings', this)">
+                                
+                                <span class="nav-text">Cấu hình Hệ thống</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/admin/" target="_blank" class="sidebar-cms-badge">
+                    
+                    <span>Wagtail CMS Admin Portal →</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ================= 2. MAIN CONTENT WRAPPER ================= -->
+        <div class="main-wrapper">
+
+            <!-- Top Header Navbar -->
+            <header class="top-navbar">
+                <div class="header-search">
+                    
+                    <input type="text" placeholder="Tìm kiếm nhanh khách hàng, đơn hàng, cơ hội (Ctrl + K)..."
+                        id="globalSearchInput" onkeyup="handleGlobalSearch(event)">
+                </div>
+
+                <div class="header-actions">
+                    <div class="ai-status-indicator">
+                        <span class="pulse-indicator"></span>
+                        <span>Gemini 2.5 Flash / Active</span>
+                    </div>
+
+                    <button class="btn-ai-sparkle" onclick="openAIAssistantDrawer()">
+                        <span>Trợ lý AI</span>
+                    </button>
+
+                    <button class="btn-add-primary" onclick="openNewCustomerModal()">
+                        <span>Thêm Khách Hàng</span>
+                    </button>
+
+                    <div class="user-profile-widget" onclick="openLoginModal()" title="Tài khoản / Đăng nhập">
+                        <div class="user-avatar">AD</div>
+                        <div style="font-size: 0.82rem; line-height: 1.2;">
+                            <div style="font-weight: 700; color: var(--text-heading);">Admin User</div>
+                            <div style="color: var(--text-muted); font-size: 0.72rem;">Giám đốc Bán hàng</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area with 8 Rich Views -->
+            <main class="content-area">
+
+                <!-- ================= VIEW 1: EXECUTIVE DASHBOARD ================= -->
+                <div id="view-dashboard" class="app-view active">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Bảng Điều Hành Kinh Doanh (Executive Overview)</h1>
+                            <p class="view-subtitle">Giám sát hiệu suất kinh doanh thời gian thực, tiến độ đường ống cơ
+                                hội và khuyến nghị từ Trí tuệ Nhân tạo.</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-ai-ghost"
+                                style="color: #475569; border-color: #cbd5e1; background: #ffffff;"
+                                onclick="triggerReportGen()">
+                                <span>Sinh Báo cáo AI</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 6 KPI Stat Cards -->
+                    <div class="kpi-grid-6">
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header">
+                                <span>Tổng Khách hàng</span>
+                                
+                            </div>
+                            <div class="kpi-stat-value">{{ total_customers }}</div>
+                            <div class="kpi-stat-footer">
+                                <span class="trend-up">↑ +18%</span> so với tháng trước
+                            </div>
+                        </div>
+
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header">
+                                <span>Khách hàng Mới (Leads)</span>
+                                
+                            </div>
+                            <div class="kpi-stat-value">{{ new_leads }}</div>
+                            <div class="kpi-stat-footer">
+                                <span style="color: #6366f1; font-weight: 600;">{{ qualified }} tiềm năng</span> đã khảo
+                                sát
+                            </div>
+                        </div>
+
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header">
+                                <span>Cơ hội Đang Theo Đuổi</span>
+                                
+                            </div>
+                            <div class="kpi-stat-value">{{ total_deals }}</div>
+                            <div class="kpi-stat-footer">
+                                Giá trị: <span style="font-weight: 700; color: #0891b2;">{{ pipeline_value|floatformat:0 }} đ</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header">
+                                <span>Doanh số Thực tế (Won)</span>
+                                
+                            </div>
+                            <div class="kpi-stat-value" style="color: #059669;">{{ won_revenue|floatformat:0 }} đ</div>
+                            <div class="kpi-stat-footer">
+                                <span class="trend-up">↑ +32%</span> mục tiêu quý này
+                            </div>
+                        </div>
+
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header">
+                                <span>Tỷ lệ Chuyển đổi (Win Rate)</span>
+                                
+                            </div>
+                            <div class="kpi-stat-value">{{ win_rate }}%</div>
+                            <div class="kpi-stat-footer">
+                                Đã chốt <span style="font-weight: 700; color: #059669;">{{ won_customers }} hợp
+                                    đồng</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header">
+                                <span>Nhiệm vụ Cần Xử lý</span>
+                                
+                            </div>
+                            <div class="kpi-stat-value">{{ pending_tasks_count }}</div>
+                            <div class="kpi-stat-footer">
+                                <span style="color: #7c3aed; font-weight: 600;">{{ ai_tasks.count }} do AI gợi ý</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prominent AI Business Insight Banner -->
+                    <div class="ai-insight-banner">
+                        <div class="ai-insight-content">
+                            <div class="ai-sparkle-avatar" style="font-weight: 800; font-size: 0.85rem;">AI</div>
+                            <div>
+                                <div class="ai-insight-tag">
+                                    <span>AI Business Intelligence Copilot</span>
+                                    <span>• Phân tích Tự động</span>
+                                </div>
+                                <div class="ai-insight-headline">
+                                    "Doanh thu tăng 18% tháng này. Hệ thống phát hiện <strong>{{ hot_count }} cơ hội giá
+                                        trị cao (Hot Leads)</strong> đang ở giai đoạn đàm phán cuối cùng. Đề xuất gửi
+                                    chính sách bảo hành 2 năm và cam kết SLA trong 24 giờ tới để chốt hợp đồng sớm."
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ai-insight-actions">
+                            <button class="btn-ai-ghost"
+                                onclick="askAICustomQuestion('Phân tích chi tiết các cơ hội giá trị cao cần chốt trong tuần này')">
+                                <span>Hỏi AI thêm</span>
+                            </button>
+                            <button class="btn-ai-sparkle" onclick="switchMainView('view-ai-center')">
+                                <span>Mở AI Center →</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Charts & Visuals -->
+                    <div class="dash-row-2">
+                        <!-- Sales Overview Chart -->
+                        <div class="card-panel">
+                            <div class="card-panel-header">
+                                <h3 class="card-panel-title">
+                                    <span>Biểu đồ Tăng trưởng Doanh thu Bán hàng</span>
+                                </h3>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">6 tháng gần nhất (VNĐ)</span>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartMonthlySales"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Funnel Distribution -->
+                        <div class="card-panel">
+                            <div class="card-panel-header">
+                                <h3 class="card-panel-title">
+                                    <span>Phân bổ Nhiệt độ Leads (AI Segmentation)</span>
+                                </h3>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Tỷ lệ chuyển đổi</span>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartLeadSegments"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Customer Overview & Activity Timeline -->
+                    <div class="dash-row-2">
+                        <!-- Phễu Bán Hàng Trực Quan -->
+                        <div class="card-panel">
+                            <div class="card-panel-header">
+                                <h3 class="card-panel-title">
+                                    <span>Phễu Cơ hội Bán hàng (Sales Pipeline Stages)</span>
+                                </h3>
+                                <button class="btn-ai-ghost"
+                                    style="color: #2563eb; background: #eff6ff; border-color: #bfdbfe; font-size: 0.78rem; padding: 0.35rem 0.75rem;"
+                                    onclick="switchMainView('view-pipeline')">
+                                    <span>Xem Kanban Board →</span>
+                                </button>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartPipelineStages"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activities Timeline -->
+                        <div class="card-panel">
+                            <div class="card-panel-header">
+                                <h3 class="card-panel-title">
+                                    <span>Nhật ký Tương tác Gần nhất</span>
+                                </h3>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Thời gian thực</span>
+                            </div>
+                            <ul class="timeline-list">
+                                {% for act in recent_interactions|slice:":4" %}
+                                <li class="timeline-item">
+                                    <div class="timeline-bullet">
+                                        {% if act.channel == "MEETING" %}Họp{% elif act.channel == "EMAIL" %}Email{% elif act.channel == "PHONE" %}Gọi{% else %}Ghi chú{% endif %}
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">{{ act.summary }}</div>
+                                        <div style="font-size: 0.82rem; color: #475569;">{{ act.customer.full_name }}
+                                            ({{ act.customer.company|default:"Cá nhân" }})</div>
+                                        <div class="timeline-meta">{{ act.interaction_date|timesince }} trước • {{ act.get_customer_sentiment_display }}</div>
+                                    </div>
+                                </li>
+                                {% empty %}
+                                <li style="text-align: center; color: var(--text-muted); padding: 2rem 0;">Chưa có hoạt
+                                    động mới.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 2: CRM CUSTOMERS ================= -->
+                <div id="view-customers" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Quản Lý Quan Hệ Khách Hàng (CRM Hub)</h1>
+                            <p class="view-subtitle">Theo dõi toàn bộ hồ sơ khách hàng, phân loại tiềm năng bằng AI và
+                                kích hoạt chăm sóc cá nhân hóa.</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-add-primary" onclick="openNewCustomerModal()">
+                                <span>Thêm Khách Hàng Mới</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <div class="table-toolbar">
+                            <div class="filter-tags-row">
+                                <span
+                                    style="font-size: 0.8rem; font-weight: 700; color: #475569; text-transform: uppercase;">Lọc
+                                    phân khúc:</span>
+                                <button class="table-filter-btn active" onclick="filterCustomerGrid('ALL', this)">Tất cả
+                                    ({{ customers.count }})</button>
+                                <button class="table-filter-btn" onclick="filterCustomerGrid('HOT', this)">Hot Leads
+                                    ({{ hot_count }})</button>
+                                <button class="table-filter-btn" onclick="filterCustomerGrid('WARM', this)">Warm Leads
+                                    ({{ warm_count }})</button>
+                                <button class="table-filter-btn" onclick="filterCustomerGrid('COLD', this)">Cold
+                                    Leads ({{ cold_count }})</button>
+                            </div>
+
+                            <div>
+                                <input type="text" id="custTableSearch" placeholder="Tìm tên, công ty, email..."
+                                    onkeyup="searchCustomerTable()"
+                                    style="padding: 0.45rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+                            </div>
+                        </div>
+
+                        <table class="saas-table" id="customersMainTable">
+                            <thead>
+                                <tr>
+                                    <th>Khách hàng & Doanh nghiệp</th>
+                                    <th>Chức vụ</th>
+                                    <th>Trạng thái CRM</th>
+                                    <th>Điểm AI Score</th>
+                                    <th>Phân khúc AI</th>
+                                    <th>Ngân sách Dự kiến</th>
+                                    <th style="text-align: right;">Thao tác Thông minh</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in customers %}
+                                <tr class="cust-row" data-segment="{{ c.ai_segment }}"
+                                    data-text="{{ c.full_name|lower }} {{ c.company|lower }} {{ c.email|lower }}">
+                                    <td>
+                                        <div class="saas-avatar-cell">
+                                            <div class="avatar-initials">{{ c.first_name|first }}{{ c.last_name|first }}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 700; color: var(--text-heading);">{{ c.full_name }}</div>
+                                                <div style="font-size: 0.78rem; color: var(--text-muted);">{{ c.company|default:"Khách hàng cá nhân" }}</div>
+                                                <div style="font-size: 0.75rem; color: #64748b;">{{ c.email }} • {{ c.phone|default:"Chưa có SĐT" }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ c.position|default:"Chưa cập nhật" }}</td>
+                                    <td>{{ c.status_badge }}</td>
+                                    <td>{{ c.ai_score_badge }}</td>
+                                    <td>
+                                        {% if c.ai_segment == "HOT" %}
+                                        <span class="badge-score-pill" style="background: #fee2e2; color: #dc2626;">
+                                            Hot Lead</span>
+                                        {% elif c.ai_segment == "WARM" %}
+                                        <span class="badge-score-pill" style="background: #fef3c7; color: #d97706;">
+                                            Warm Lead</span>
+                                        {% elif c.ai_segment == "COLD" %}
+                                        <span class="badge-score-pill" style="background: #f1f5f9; color: #475569;">
+                                            Cold Lead</span>
+                                        {% else %}
+                                        <span style="color: #94a3b8; font-size: 0.78rem;">Chưa chấm</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="font-weight: 700; color: #0f172a;">{{ c.budget_display }}</td>
+                                    <td style="text-align: right;">
+                                        <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+                                            <button class="badge-ai-trigger"
+                                                onclick="openCustomerDetailDrawer('{{ c.id }}')">
+                                                <span>Xem Hồ sơ</span>
+                                            </button>
+                                            <button class="badge-ai-trigger"
+                                                style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;"
+                                                onclick="quickRunAIAnalysis('{{ c.id }}')">
+                                                <span>Chấm AI</span>
+                                            </button>
+                                            <button class="badge-ai-trigger"
+                                                style="background: #ecfeff; color: #0e7490; border-color: #a5f3fc;"
+                                                onclick="quickOpenEmailModal('{{ c.id }}')">
+                                                <span>Email</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 3: PIPELINE KANBAN BOARD ================= -->
+                <div id="view-pipeline" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Đường Ống Bán Hàng (Opportunity Kanban Board)</h1>
+                            <p class="view-subtitle">Kéo thả các cơ hội để cập nhật giai đoạn. Hệ thống tự động kích
+                                hoạt AI phân tích rủi ro và xác suất thành công.</p>
+                        </div>
+                    </div>
+
+                    <div class="kanban-board-container">
+                        <!-- Column 1: Discovery -->
+                        <div class="kanban-column" ondragover="allowDrop(event)"
+                            ondrop="handleKanbanDrop(event, 'DISCOVERY')">
+                            <div class="kanban-col-header" style="border-top: 3px solid #3b82f6;">
+                                <span>1. Khảo sát Nhu cầu</span>
+                                <span class="kanban-col-count" id="count-DISCOVERY">{{ kanban_stages.DISCOVERY.deals.count }}</span>
+                            </div>
+                            <div class="kanban-cards-wrapper" id="col-DISCOVERY">
+                                {% for d in kanban_stages.DISCOVERY.deals %}
+                                {% include "crm_core/includes/kanban_card.html" with deal=d %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Proposal -->
+                        <div class="kanban-column" ondragover="allowDrop(event)"
+                            ondrop="handleKanbanDrop(event, 'PROPOSAL')">
+                            <div class="kanban-col-header" style="border-top: 3px solid #6366f1;">
+                                <span>2. Gửi Đề xuất & Báo giá</span>
+                                <span class="kanban-col-count" id="count-PROPOSAL">{{ kanban_stages.PROPOSAL.deals.count }}</span>
+                            </div>
+                            <div class="kanban-cards-wrapper" id="col-PROPOSAL">
+                                {% for d in kanban_stages.PROPOSAL.deals %}
+                                {% include "crm_core/includes/kanban_card.html" with deal=d %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Negotiation -->
+                        <div class="kanban-column" ondragover="allowDrop(event)"
+                            ondrop="handleKanbanDrop(event, 'NEGOTIATION')">
+                            <div class="kanban-col-header" style="border-top: 3px solid #f59e0b;">
+                                <span>3. Đàm phán Điều khoản</span>
+                                <span class="kanban-col-count" id="count-NEGOTIATION">{{ kanban_stages.NEGOTIATION.deals.count }}</span>
+                            </div>
+                            <div class="kanban-cards-wrapper" id="col-NEGOTIATION">
+                                {% for d in kanban_stages.NEGOTIATION.deals %}
+                                {% include "crm_core/includes/kanban_card.html" with deal=d %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Column 4: Closed Won -->
+                        <div class="kanban-column" ondragover="allowDrop(event)"
+                            ondrop="handleKanbanDrop(event, 'CLOSED_WON')">
+                            <div class="kanban-col-header" style="border-top: 3px solid #10b981;">
+                                <span>4. Thành công (Won)</span>
+                                <span class="kanban-col-count" id="count-CLOSED_WON">{{ kanban_stages.CLOSED_WON.deals.count }}</span>
+                            </div>
+                            <div class="kanban-cards-wrapper" id="col-CLOSED_WON">
+                                {% for d in kanban_stages.CLOSED_WON.deals %}
+                                {% include "crm_core/includes/kanban_card.html" with deal=d %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Column 5: Closed Lost -->
+                        <div class="kanban-column" ondragover="allowDrop(event)"
+                            ondrop="handleKanbanDrop(event, 'CLOSED_LOST')">
+                            <div class="kanban-col-header" style="border-top: 3px solid #f43f5e;">
+                                <span>5. Thất bại (Lost)</span>
+                                <span class="kanban-col-count" id="count-CLOSED_LOST">{{ kanban_stages.CLOSED_LOST.deals.count }}</span>
+                            </div>
+                            <div class="kanban-cards-wrapper" id="col-CLOSED_LOST">
+                                {% for d in kanban_stages.CLOSED_LOST.deals %}
+                                {% include "crm_core/includes/kanban_card.html" with deal=d %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 4: ERP LITE PRODUCTS ================= -->
+                <div id="view-products" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Danh Mục Sản Phẩm & Dịch Vụ (ERP Lite Catalog)</h1>
+                            <p class="view-subtitle">Quản lý giá bán, mã SKU và tình trạng tồn kho của các giải pháp
+                                doanh nghiệp.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="saas-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã SKU</th>
+                                    <th>Tên Sản phẩm / Gói Giải pháp</th>
+                                    <th>Danh mục</th>
+                                    <th>Đơn giá</th>
+                                    <th>Dung lượng / Tồn kho</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in products %}
+                                <tr>
+                                    <td style="font-weight: 700; color: #2563eb;">{{ p.sku }}</td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--text-heading);">{{ p.name }}</div>
+                                        <div style="font-size: 0.78rem; color: var(--text-muted);">{{ p.description|truncatechars:80 }}</div>
+                                    </td>
+                                    <td><span class="badge-status" style="background: #f1f5f9; color: #475569;">{{ p.get_category_display }}</span></td>
+                                    <td style="font-weight: 700; color: #0f172a;">{{ p.price|floatformat:0 }} đ</td>
+                                    <td>{{ p.stock }} đơn vị</td>
+                                    <td>
+                                        {% if p.status == "IN_STOCK" %}
+                                        <span class="badge-status" style="background: #ecfdf5; color: #059669;">Còn
+                                            hàng</span>
+                                        {% elif p.status == "SERVICE" %}
+                                        <span class="badge-status" style="background: #eff6ff; color: #2563eb;">Dịch
+                                            vụ</span>
+                                        {% else %}
+                                        <span class="badge-status" style="background: #fff1f2; color: #e11d48;">Hết
+                                            hàng</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 5: ERP LITE ORDERS ================= -->
+                <div id="view-orders" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Quản Lý Đơn Hàng & Hợp Đồng (ERP Orders)</h1>
+                            <p class="view-subtitle">Theo dõi tiến độ thanh toán, hóa đơn và thực hiện cam kết dịch vụ
+                                cho khách hàng.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="saas-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đơn</th>
+                                    <th>Khách hàng & Doanh nghiệp</th>
+                                    <th>Hạng mục Triển khai</th>
+                                    <th>Tổng Giá trị</th>
+                                    <th>Thanh toán</th>
+                                    <th>Trạng thái Xử lý</th>
+                                    <th>Ngày Lập</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for o in orders %}
+                                <tr>
+                                    <td style="font-weight: 700; color: #4338ca;">{{ o.order_number }}</td>
+                                    <td>
+                                        <div style="font-weight: 600;">{{ o.customer.full_name }}</div>
+                                        <div style="font-size: 0.78rem; color: var(--text-muted);">{{ o.customer.company }}</div>
+                                    </td>
+                                    <td>{{ o.items_summary }}</td>
+                                    <td style="font-weight: 800; color: #0f172a;">{{ o.total_amount|floatformat:0 }} đ
+                                    </td>
+                                    <td>
+                                        {% if o.payment_status == "PAID" %}
+                                        <span class="badge-status" style="background: #ecfdf5; color: #059669;">Đã thanh
+                                            toán</span>
+                                        {% elif o.payment_status == "PARTIAL" %}
+                                        <span class="badge-status" style="background: #fef3c7; color: #d97706;">Một
+                                            phần</span>
+                                        {% else %}
+                                        <span class="badge-status" style="background: #fee2e2; color: #dc2626;">Chờ
+                                            thanh toán</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="badge-status" style="background: #f1f5f9; color: #334155;">{{ o.get_status_display }}</span></td>
+                                    <td style="color: var(--text-muted); font-size: 0.82rem;">{{ o.order_date|date:"d/m/Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 6: ERP RESOURCES ================= -->
+                <div id="view-resources" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Quản Trị Tài Nguyên Doanh Nghiệp (Resources & Assets)</h1>
+                            <p class="view-subtitle">Tổng quan nhân sự chuyên môn, phân bổ phòng ban và trang thiết bị
+                                hạ tầng.</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-grid-6" style="margin-bottom: 2rem;">
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header"><span>Nhân sự Chuyên môn</span></div>
+                            <div class="kpi-stat-value">18</div>
+                            <div class="kpi-stat-footer">Sales, Tech, Support</div>
+                        </div>
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header"><span>Phòng ban Vận hành</span></div>
+                            <div class="kpi-stat-value">4</div>
+                            <div class="kpi-stat-footer">Sales, Dev, ERP, CSKH</div>
+                        </div>
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header"><span>Thiết bị IoT / POS</span></div>
+                            <div class="kpi-stat-value">18 Máy</div>
+                            <div class="kpi-stat-footer">Đang hoạt động tại kho</div>
+                        </div>
+                        <div class="kpi-stat-card">
+                            <div class="kpi-stat-header"><span>Công suất Kho bãi</span></div>
+                            <div class="kpi-stat-value">82%</div>
+                            <div class="kpi-stat-footer">Hà Nội & TP.HCM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 7: AI COMMAND CENTER ================= -->
+                <div id="view-ai-center" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Trung Tâm Trí Tuệ Nhân Tạo (AI Command Center)</h1>
+                            <p class="view-subtitle">Trợ lý AI doanh nghiệp thế hệ mới tích hợp trực tiếp Google Gemini
+                                2.5 & OpenAI GPT-4o.</p>
+                        </div>
+                    </div>
+
+                    <div class="ai-center-layout">
+                        <!-- Left Chat Container -->
+                        <div class="ai-chat-box">
+                            <div class="ai-chat-header">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <div class="ai-sparkle-avatar" style="width: 32px; height: 32px; font-size: 1rem;">
+                                        AI</div>
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 0.95rem;">SmartFlow Business Co-pilot
+                                        </div>
+                                        <div style="font-size: 0.72rem; color: #64748b;">Trực tuyến • Phân tích dữ liệu
+                                            CRM/ERP tức thời</div>
+                                    </div>
+                                </div>
+                                <span class="badge-ai-trigger" onclick="clearAIChatHistory()">Làm mới đoạn chat</span>
+                            </div>
+
+                            <div class="ai-chat-messages" id="aiChatMessagesContainer">
+                                <div class="chat-bubble ai">
+                                    Xin chào! Tôi là <strong>SmartFlow AI Co-pilot</strong>. Tôi có thể giúp bạn:
+                                    <ul style="margin: 0.5rem 0 0 1.25rem;">
+                                        <li>Phân tích chuyên sâu doanh số và dự báo đường ống cơ hội.</li>
+                                        <li>Đánh giá rủi ro của từng hợp đồng và gợi ý chiến lược chốt sales.</li>
+                                        <li>Tự động soạn thảo email báo giá, chào mừng hoặc chăm sóc khách hàng.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="ai-chips-shelf">
+                                <span class="ai-chip"
+                                    onclick="handleChipClick('Phân tích tình hình bán hàng tháng này và cho tôi biết cơ hội nào cần ưu tiên.')">
+                                    Phân tích bán hàng tháng này
+                                </span>
+                                <span class="ai-chip"
+                                    onclick="handleChipClick('Khách hàng nào đang có nguy cơ rớt hợp đồng?')">
+                                    Dự báo rủi ro hợp đồng
+                                </span>
+                                <span class="ai-chip"
+                                    onclick="handleChipClick('Đề xuất 3 hành động chiến lược để tăng doanh số quý này.')">
+                                    3 hành động tăng doanh số
+                                </span>
+                            </div>
+
+                            <div class="ai-chat-input-bar">
+                                <input type="text" id="aiMainQueryInput" class="ai-input"
+                                    placeholder="Nhập câu hỏi hoặc yêu cầu cho AI (ví dụ: Tóm tắt 3 deals lớn nhất...)"
+                                    onkeypress="if(event.key === 'Enter') sendAIChatMessage()">
+                                <button class="btn-ai-sparkle" onclick="sendAIChatMessage()" id="btnSendAIChat">
+                                    <span>Gửi</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right Quick AI Tools Panel -->
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <!-- Tool 1: AI Email Generator -->
+                            <div class="card-panel">
+                                <h3 class="card-panel-title" style="margin-bottom: 1rem;">
+                                    <span>Soạn Thảo Email Thông Minh (B2B Drafter)</span>
+                                </h3>
+                                <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                                    <div>
+                                        <label style="font-size: 0.78rem; font-weight: 600; color: #475569;">Chọn Khách
+                                            hàng:</label>
+                                        <select id="quickEmailCustomer"
+                                            style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; margin-top: 0.25rem;">
+                                            {% for c in customers %}
+                                            <option value="{{ c.id }}">{{ c.full_name }} ({{ c.company|default:"Cá nhân" }})</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.78rem; font-weight: 600; color: #475569;">Ngữ cảnh
+                                            Email:</label>
+                                        <select id="quickEmailType"
+                                            style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; margin-top: 0.25rem;">
+                                            <option value="PROPOSAL">Thư gửi Báo giá & Đề xuất giải pháp</option>
+                                            <option value="WELCOME">Thư Chào mừng & Giới thiệu năng lực</option>
+                                            <option value="FOLLOW_UP">Thư Chăm sóc & Theo dõi sau cuộc họp</option>
+                                            <option value="CLOSING">Thư Thúc đẩy Ký hợp đồng</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn-add-primary" style="justify-content: center;"
+                                        onclick="generateQuickEmail()">
+                                        <span>Tạo Email Ngay</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tool 2: Executive Report Generator -->
+                            <div class="card-panel">
+                                <h3 class="card-panel-title" style="margin-bottom: 0.5rem;">
+                                    <span>Lập Báo Cáo Điều Hành Tức Thì</span>
+                                </h3>
+                                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                    AI quét toàn bộ cơ sở dữ liệu để viết báo cáo tóm tắt kèm các khuyến nghị hành động.
+                                </p>
+                                <button class="btn-ai-sparkle" style="width: 100%; justify-content: center;"
+                                    onclick="triggerReportGen()">
+                                    <span>Sinh Báo Cáo Kỳ Này</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 8: REPORTS & ANALYTICS ================= -->
+                <div id="view-reports" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Báo Cáo & Phân Tích Chuyên Sâu (Analytics)</h1>
+                            <p class="view-subtitle">Tổng hợp số liệu kinh doanh, phễu chuyển đổi và các phân tích do AI
+                                sinh ra.</p>
+                        </div>
+                    </div>
+
+                    <div id="reportsListContainer">
+                        {% for rep in recent_reports %}
+                        <div class="card-panel" style="margin-bottom: 1.5rem;">
+                            <div class="card-panel-header">
+                                <div>
+                                    <h3 style="font-size: 1.2rem; font-weight: 700; color: #1e1b4b;">{{ rep.title }}
+                                    </h3>
+                                    <span style="font-size: 0.78rem; color: var(--text-muted);">Khởi tạo ngày: {{ rep.created_at|date:"d/m/Y H:i" }} • Kỳ: {{ rep.period_label }}</span>
+                                </div>
+                                <span class="badge-status" style="background: #e0e7ff; color: #4338ca;">AI
+                                    Generated</span>
+                            </div>
+                            <div
+                                style="font-size: 0.92rem; line-height: 1.7; color: #334155; white-space: pre-wrap; margin-bottom: 1.25rem;">
+                                {{ rep.executive_summary }}</div>
+                            <div
+                                style="background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; border-radius: 0 8px 8px 0;">
+                                <strong style="color: #4338ca; display: block; margin-bottom: 0.35rem;">Khuyến nghị
+                                    chiến lược:</strong>
+                                <div style="font-size: 0.88rem; color: #475569; white-space: pre-wrap;">{{ rep.key_recommendations }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="card-panel" style="text-align: center; padding: 3rem;">
+                            Chưa có báo cáo nào. Bấm nút "Sinh Báo cáo AI" để tạo báo cáo đầu tiên!
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 9: TASKS & CALENDAR ================= -->
+                <div id="view-tasks" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Nhiệm Vụ & Lịch Làm Việc (Productivity Hub)</h1>
+                            <p class="view-subtitle">Theo dõi công việc cần làm, lịch họp demo và các hành động do AI
+                                chủ động đề xuất.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="saas-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;"></th>
+                                    <th>Nhiệm vụ</th>
+                                    <th>Khách hàng liên quan</th>
+                                    <th>Người phụ trách</th>
+                                    <th>Loại</th>
+                                    <th>Hạn hoàn thành</th>
+                                    <th>Độ ưu tiên</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in tasks %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" {% if t.is_completed %}checked{% endif %}
+                                            onchange="toggleTaskCompletion('{{ t.id }}')"
+                                            style="cursor: pointer; width: 16px; height: 16px;">
+                                    </td>
+                                    <td>
+                                        <div
+                                            style="font-weight: 600; {% if t.is_completed %}text-decoration: line-through; color: #94a3b8;{% endif %}">
+                                            {{ t.title }}</div>
+                                        {% if t.ai_suggested %}
+                                        <span style="font-size: 0.72rem; color: #7c3aed; font-weight: 700;">Do AI gợi
+                                            ý tiếp theo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ t.customer.full_name|default:"-" }}</td>
+                                    <td style="color: var(--text-muted);">{{ t.assigned_to }}</td>
+                                    <td><span class="badge-status" style="background: #f1f5f9;">{{ t.get_task_type_display }}</span></td>
+                                    <td style="font-weight: 600;">{{ t.due_date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if t.priority == "HIGH" %}
+                                        <span class="badge-status" style="background: #fee2e2; color: #dc2626;">Ưu tiên
+                                            cao</span>
+                                        {% else %}
+                                        <span class="badge-status" style="background: #f1f5f9; color: #475569;">Bình
+                                            thường</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 10: WAGTAIL CMS / CONTENT ================= -->
+                <div id="view-cms" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Quản Trị Nội Dung Website (Wagtail CMS Portal)</h1>
+                            <p class="view-subtitle">Tích hợp sâu cùng Wagtail CMS: Quản trị trang chủ, bài viết blog,
+                                trang giải pháp và tài liệu khách hàng.</p>
+                        </div>
+                        <a href="/admin/" target="_blank" class="btn-add-primary" style="text-decoration: none;">
+                            <span>Mở Wagtail Admin Portal ↗</span>
+                        </a>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="card-panel">
+                            
+                            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">Trang Web &
+                                Landing Pages</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Biên tập trang chủ, bảng giá giải pháp ERP và giới thiệu dịch vụ bằng StreamField linh
+                                hoạt.
+                            </p>
+                            <a href="/admin/pages/" target="_blank" class="badge-ai-trigger"
+                                style="text-decoration: none;">Chỉnh sửa Trang trong Wagtail →</a>
+                        </div>
+
+                        <div class="card-panel">
+                            
+                            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">Tin Tức & Kiến
+                                Thức B2B</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Xuất bản bài viết chia sẻ kinh nghiệm vận hành doanh nghiệp và case study thành công.
+                            </p>
+                            <a href="/admin/pages/" target="_blank" class="badge-ai-trigger"
+                                style="text-decoration: none;">Viết bài mới →</a>
+                        </div>
+
+                        <div class="card-panel">
+                            
+                            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">Kho Tư Liệu &
+                                Media</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Quản lý hình ảnh sản phẩm, hợp đồng mẫu, catalogue PDF với Wagtail Documents.
+                            </p>
+                            <a href="/admin/documents/" target="_blank" class="badge-ai-trigger"
+                                style="text-decoration: none;">Quản lý Tài liệu →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= VIEW 11: SETTINGS ================= -->
+                <div id="view-settings" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Cấu Hình Nền Tảng (System Settings)</h1>
+                            <p class="view-subtitle">Thiết lập khóa API Trí tuệ Nhân tạo (Gemini / OpenAI), chế độ dự
+                                phòng và thông tin tổ chức.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-panel" style="max-width: 700px;">
+                        <h3 class="card-panel-title" style="margin-bottom: 1rem;">Cấu hình AI Provider</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div>
+                                <label
+                                    style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">AI
+                                    Provider Hiện Tại:</label>
+                                <input type="text" value="Google Gemini 2.5 Flash (Kèm Smart Local Fallback)" readonly
+                                    style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-weight: 600;">
+                            </div>
+                            <div>
+                                <label
+                                    style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Trạng
+                                    thái Cơ sở dữ liệu:</label>
+                                <span class="badge-status" style="background: #ecfdf5; color: #059669;">Đồng bộ hoàn
+                                    chỉnh (SQLite / Wagtail 8.0)</span>
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                Để cập nhật API Key hoặc đổi sang OpenAI, quý khách có thể cập nhật trong file
+                                <code>.env</code> tại thư mục gốc của dự án.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ================= 3. CONTEXTUAL AI ASSISTANT SLIDE-OVER DRAWER ================= -->
+    <div class="drawer-overlay" id="aiDrawerOverlay" onclick="closeAIAssistantDrawer()"></div>
+    <div class="drawer-panel" id="aiAssistantDrawer">
+        <div class="drawer-header">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                
+                <div>
+                    <h3 style="margin: 0; font-size: 1.1rem; color: #ffffff;">AI Customer Assistant</h3>
+                    <span style="font-size: 0.75rem; color: #a5b4fc;">Trợ lý Tóm tắt & Đề xuất Hành động Bán hàng</span>
+                </div>
+            </div>
+            <button onclick="closeAIAssistantDrawer()"
+                style="background: transparent; border: none; color: #ffffff; font-size: 1.25rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <div class="drawer-body" id="drawerBodyContent">
+            <!-- Dynamic Content loaded on click -->
+            <div id="drawerDefaultState">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    Chọn một khách hàng hoặc cơ hội bán hàng để trợ lý AI tự động phân tích hành vi, tóm tắt lịch sử và
+                    gợi ý email phản hồi.
+                </p>
+                <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button class="ai-chip" style="text-align: left; padding: 0.65rem 1rem;"
+                        onclick="askAIDrawer('Tóm tắt tình hình các hợp đồng lớn nhất')">
+                        Tóm tắt các hợp đồng giá trị cao
+                    </button>
+                    <button class="ai-chip" style="text-align: left; padding: 0.65rem 1rem;"
+                        onclick="askAIDrawer('Các khách hàng nào cần gửi báo giá lại?')">
+                        Khách hàng cần follow-up ngay
+                    </button>
+                </div>
+            </div>
+
+            <div id="drawerDynamicResults" style="display: none;">
+                <!-- Filled via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 4. ADD NEW CUSTOMER MODAL ================= -->
+    <div class="login-modal" id="newCustomerModal">
+        <div class="login-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700;">Tiếp Nhận Khách Hàng Mới</h2>
+                <button onclick="closeNewCustomerModal()"
+                    style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer;">&times;</button>
+            </div>
+            <form onsubmit="submitQuickCustomer(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                    <div>
+                        <label style="font-size: 0.78rem; font-weight: 600;">Tên (*):</label>
+                        <input type="text" id="m_first_name" required
+                            style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;"
+                            placeholder="Văn A">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.78rem; font-weight: 600;">Họ (*):</label>
+                        <input type="text" id="m_last_name" required
+                            style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;"
+                            placeholder="Nguyễn">
+                    </div>
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    <label style="font-size: 0.78rem; font-weight: 600;">Email (*):</label>
+                    <input type="email" id="m_email" required
+                        style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;"
+                        placeholder="a.nguyen@company.com">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                    <div>
+                        <label style="font-size: 0.78rem; font-weight: 600;">Công ty:</label>
+                        <input type="text" id="m_company"
+                            style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;"
+                            placeholder="Công ty CP ABC">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.78rem; font-weight: 600;">Ngân sách (VNĐ):</label>
+                        <input type="number" id="m_budget" value="60000000"
+                            style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 1.25rem;">
+                    <label style="font-size: 0.78rem; font-weight: 600;">Nhu cầu sơ bộ:</label>
+                    <textarea id="m_notes" rows="2"
+                        style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;"
+                        placeholder="Cần phần mềm ERP quản lý bán hàng và chấm điểm lead..."></textarea>
+                </div>
+                <button type="submit" class="btn-add-primary"
+                    style="width: 100%; justify-content: center; padding: 0.75rem;">
+                    <span>Lưu & Kích hoạt Phân tích AI Tức thì</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 5. LOGIN / WELCOME SCREEN MODAL ================= -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-card">
+            <button onclick="closeLoginModal()"
+                style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; font-size: 1.25rem; cursor: pointer;">&times;</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div class="brand-logo-icon" style="margin: 0 auto 0.75rem auto;">SF</div>
+                <h2 style="font-size: 1.35rem; font-weight: 800;">SmartFlow Enterprise</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Hệ thống Quản trị Doanh
+                    nghiệp Thông minh trên Wagtail CMS</p>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)">
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.78rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Tài
+                        khoản / Email:</label>
+                    <input type="text" value="admin" required
+                        style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.78rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Mật
+                        khẩu:</label>
+                    <input type="password" value="••••••••" required
+                        style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.8rem;">
+                    <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+                        <input type="checkbox" checked> Ghi nhớ đăng nhập
+                    </label>
+                    <a href="javascript:void(0)" style="color: var(--primary); text-decoration: none;">Quên mật
+                        khẩu?</a>
+                </div>
+                <button type="submit" class="btn-add-primary"
+                    style="width: 100%; justify-content: center; padding: 0.75rem; margin-bottom: 0.75rem;">
+                    <span>Đăng nhập vào Hệ thống</span>
+                </button>
+                <a href="/admin/" target="_blank" class="btn-ai-ghost"
+                    style="width: 100%; justify-content: center; color: #475569; border-color: #cbd5e1; text-decoration: none; padding: 0.65rem;">
+                    <span>Chuyển sang Wagtail Admin (Wagtail 8.0)</span>
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 6. TOAST NOTIFICATION ================= -->
+    <div class="toast-msg" id="appToast">
+        <span id="toastIcon"></span>
+        <span id="toastText">Thao tác thành công!</span>
+    </div>
+
+    <!-- ================= SCRIPTS & CHART SETUP ================= -->
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        function showToast(text, isError = false) {
+            const toast = document.getElementById('appToast');
+            document.getElementById('toastText').innerText = text;
+            document.getElementById('toastIcon').innerText = '';
+            toast.style.borderLeftColor = isError ? '#f43f5e' : '#10b981';
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3500);
+        }
+
+        // Sidebar toggle
+        function toggleSidebar() {
+            document.getElementById('appSidebar').classList.toggle('collapsed');
+        }
+
+        // View Switcher
+        function switchMainView(viewId, btn = null) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add('active');
+
+            if (btn) {
+                document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // AI Assistant Drawer
+        function openAIAssistantDrawer() {
+            document.getElementById('aiDrawerOverlay').classList.add('active');
+            document.getElementById('aiAssistantDrawer').classList.add('active');
+        }
+
+        function closeAIAssistantDrawer() {
+            document.getElementById('aiDrawerOverlay').classList.remove('active');
+            document.getElementById('aiAssistantDrawer').classList.remove('active');
+        }
+
+        // Modals
+        function openNewCustomerModal() { document.getElementById('newCustomerModal').classList.add('active'); }
+        function closeNewCustomerModal() { document.getElementById('newCustomerModal').classList.remove('active'); }
+        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            showToast("Đã đồng bộ phiên làm việc của Quản trị viên!");
+            closeLoginModal();
+        }
+
+        // Kanban Drag & Drop
+        let draggedDealId = null;
+
+        function handleDragStart(e, dealId) {
+            draggedDealId = dealId;
+            e.dataTransfer.setData('text/plain', dealId);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        async function handleKanbanDrop(e, newStage) {
+            e.preventDefault();
+            const dealId = draggedDealId || e.dataTransfer.getData('text/plain');
+            if (!dealId) return;
+
+            const card = document.getElementById(`deal-card-${dealId}`);
+            const targetCol = document.getElementById(`col-${newStage}`);
+            if (card && targetCol) {
+                targetCol.appendChild(card);
+            }
+
+            try {
+                const res = await fetch('/api/update-deal-stage/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ deal_id: dealId, new_stage: newStage })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message);
+                } else {
+                    showToast("Lỗi cập nhật: " + data.error, true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Lỗi kết nối máy chủ", true);
+            }
+        }
+
+        // Customer Drawer Details
+        async function openCustomerDetailDrawer(customerId) {
+            openAIAssistantDrawer();
+            const container = document.getElementById('drawerDynamicResults');
+            const defaultBox = document.getElementById('drawerDefaultState');
+            defaultBox.style.display = 'none';
+            container.style.display = 'block';
+            container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #64748b;">Đang tải hồ sơ và phân tích AI...</div>';
+
+            try {
+                const res = await fetch(`/api/customer-detail/${customerId}/`);
+                const data = await res.json();
+                if (data.success) {
+                    const c = data.customer;
+                    container.innerHTML = `
+                        <div style="margin-bottom: 1.25rem;">
+                            <div style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">${c.full_name}</div>
+                            <div style="color: #64748b; font-size: 0.85rem;">${c.company || 'Cá nhân'} • ${c.position || 'Khách hàng'}</div>
+                        </div>
+
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #64748b;">Điểm Tiềm Năng AI</span>
+                                <span class="badge-prob" style="font-size: 0.85rem;">${c.ai_score}/100 pts</span>
+                            </div>
+                            <div style="font-size: 0.88rem; color: #334155; line-height: 1.5; margin-bottom: 0.75rem;">
+                                ${c.ai_summary || 'Chưa có phân tích.'}
+                            </div>
+                            <div style="background: #eef2ff; border-left: 3px solid #6366f1; padding: 0.65rem; font-size: 0.82rem; color: #3730a3; border-radius: 0 6px 6px 0;">
+                                <strong>Hành động đề xuất:</strong> ${c.ai_next_action || 'Liên hệ cập nhật nhu cầu.'}
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                            <button class="btn-ai-sparkle" style="flex: 1; justify-content: center;" onclick="quickRunAIAnalysis(${c.id})">
+                                <span>Chấm lại AI</span>
+                            </button>
+                            <button class="btn-add-primary" style="flex: 1; justify-content: center;" onclick="quickOpenEmailModal(${c.id})">
+                                <span>Soạn Thư</span>
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                container.innerHTML = '<div style="color: #dc2626;">Lỗi tải dữ liệu.</div>';
+            }
+        }
+
+        // AI Chat
+        async function sendAIChatMessage() {
+            const input = document.getElementById('aiMainQueryInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            const container = document.getElementById('aiChatMessagesContainer');
+            container.innerHTML += `<div class="chat-bubble user">${query}</div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            const loadingId = 'ai-load-' + Date.now();
+            container.innerHTML += `<div class="chat-bubble ai" id="${loadingId}"><em>SmartFlow AI đang đọc cơ sở dữ liệu và suy nghĩ...</em></div>`;
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat-with-ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ query: query })
+                });
+                const data = await res.json();
+                const loadEl = document.getElementById(loadingId);
+                if (data.success) {
+                    if (loadEl) loadEl.innerHTML = data.data.reply.replace(/\n/g, '<br>');
+                } else {
+                    if (loadEl) loadEl.innerHTML = `${data.error}`;
+                }
+            } catch (err) {
+                const loadEl = document.getElementById(loadingId);
+                if (loadEl) loadEl.innerHTML = 'Lỗi kết nối dịch vụ AI.';
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleChipClick(text) {
+            document.getElementById('aiMainQueryInput').value = text;
+            sendAIChatMessage();
+        }
+
+        function askAICustomQuestion(text) {
+            switchMainView('view-ai-center');
+            document.getElementById('aiMainQueryInput').value = text;
+            sendAIChatMessage();
+        }
+
+        function clearAIChatHistory() {
+            document.getElementById('aiChatMessagesContainer').innerHTML = `
+                <div class="chat-bubble ai">Đoạn hội thoại đã được làm mới. Hãy nhập câu hỏi để bắt đầu phân tích!</div>
+            `;
+        }
+
+        // Quick AI Analysis
+        async function quickRunAIAnalysis(customerId) {
+            showToast("Đang kích hoạt Gemini AI chấm điểm...");
+            try {
+                const res = await fetch('/api/analyze-customer/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ customer_id: customerId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Đã chấm điểm cho ${data.full_name}: ${data.data.ai_score} pts [${data.data.ai_segment}]`);
+                    setTimeout(() => window.location.reload(), 1200);
+                }
+            } catch (err) {
+                showToast("Lỗi phân tích AI", true);
+            }
+        }
+
+        // Quick Email Generation
+        function quickOpenEmailModal(customerId) {
+            switchMainView('view-ai-center');
+            document.getElementById('quickEmailCustomer').value = customerId;
+        }
+
+        async function generateQuickEmail() {
+            const customerId = document.getElementById('quickEmailCustomer').value;
+            const emailType = document.getElementById('quickEmailType').value;
+            showToast("AI đang soạn thảo email...");
+
+            try {
+                const res = await fetch('/api/generate-email/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ customer_id: customerId, email_type: emailType })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const em = data.email;
+                    const container = document.getElementById('aiChatMessagesContainer');
+                    container.innerHTML += `
+                        <div class="chat-bubble ai">
+                            <strong>Bản thảo Email AI (${emailType}):</strong><br><br>
+                            <strong>Tiêu đề:</strong> ${em.subject}<br><br>
+                            <pre>${em.body}</pre>
+                        </div>
+                    `;
+                    container.scrollTop = container.scrollHeight;
+                    showToast("Đã tạo email thành công! Xem trong khung chat bên trái.");
+                }
+            } catch (err) {
+                showToast("Lỗi sinh email", true);
+            }
+        }
+
+        // Report Generation
+        async function triggerReportGen() {
+            showToast("AI đang tổng hợp báo cáo điều hành...");
+            try {
+                const res = await fetch('/api/generate-report/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ period_label: "Báo cáo Điều hành Tháng này" })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast("Báo cáo AI đã được khởi tạo thành công!");
+                    setTimeout(() => {
+                        switchMainView('view-reports');
+                        window.location.reload();
+                    }, 1200);
+                }
+            } catch (err) {
+                showToast("Lỗi tạo báo cáo", true);
+            }
+        }
+
+        // Task toggle
+        async function toggleTaskCompletion(taskId) {
+            try {
+                const res = await fetch('/api/toggle-task/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ task_id: taskId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Submit quick customer
+        async function submitQuickCustomer(e) {
+            e.preventDefault();
+            const payload = {
+                first_name: document.getElementById('m_first_name').value,
+                last_name: document.getElementById('m_last_name').value,
+                email: document.getElementById('m_email').value,
+                company: document.getElementById('m_company').value,
+                budget: document.getElementById('m_budget').value,
+                requirements_notes: document.getElementById('m_notes').value,
+            };
+
+            try {
+                const res = await fetch('/api/create-customer/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Đã thêm ${data.customer.full_name} và AI chấm ${data.customer.ai_score} điểm!`);
+                    closeNewCustomerModal();
+                    setTimeout(() => window.location.reload(), 1200);
+                }
+            } catch (err) {
+                showToast("Lỗi thêm khách hàng", true);
+            }
+        }
+
+        // Search & Filter
+        function filterCustomerGrid(segment, btn) {
+            document.querySelectorAll('.table-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const rows = document.querySelectorAll('.cust-row');
+            rows.forEach(r => {
+                const s = r.getAttribute('data-segment');
+                r.style.display = (segment === 'ALL' || s === segment) ? '' : 'none';
+            });
+        }
+
+        function searchCustomerTable() {
+            const q = document.getElementById('custTableSearch').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.cust-row');
+            rows.forEach(r => {
+                const txt = r.getAttribute('data-text') || '';
+                r.style.display = (!q || txt.includes(q)) ? '' : 'none';
+            });
+        }
+
+        function handleGlobalSearch(e) {
+            if (e.key === 'Enter') {
+                const q = document.getElementById('globalSearchInput').value.trim();
+                if (q) {
+                    switchMainView('view-customers');
+                    document.getElementById('custTableSearch').value = q;
+                    searchCustomerTable();
+                }
+            }
+        }
+
+        // Initialize Charts on DOM Ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const monthlyData = JSON.parse('{{ monthly_sales_json|escapejs }}');
+            const stageData = JSON.parse('{{ stage_counts_json|escapejs }}');
+            const segmentData = JSON.parse('{{ segment_counts_json|escapejs }}');
+
+            // 1. Monthly Sales Line Chart
+            const ctxSales = document.getElementById('chartMonthlySales').getContext('2d');
+            new Chart(ctxSales, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(monthlyData),
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: Object.values(monthlyData),
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                callback: val => (val / 1000000) + 'M'
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 2. Lead Segments Doughnut
+            const ctxSeg = document.getElementById('chartLeadSegments').getContext('2d');
+            new Chart(ctxSeg, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(segmentData),
+                    datasets: [{
+                        data: Object.values(segmentData),
+                        backgroundColor: ['#f43f5e', '#f59e0b', '#38bdf8', '#94a3b8'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                    },
+                    cutout: '72%'
+                }
+            });
+
+            // 3. Pipeline Stages Bar Chart
+            const ctxPipe = document.getElementById('chartPipelineStages').getContext('2d');
+            new Chart(ctxPipe, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(stageData),
+                    datasets: [{
+                        label: 'Số lượng cơ hội',
+                        data: Object.values(stageData),
+                        backgroundColor: ['#3b82f6', '#6366f1', '#f59e0b', '#10b981', '#f43f5e'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
